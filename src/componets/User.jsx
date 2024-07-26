@@ -166,7 +166,7 @@ const User = () => {
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th>#</th>
+              <th>ID</th>
               <th>UserId</th>
               <th>Title</th>
               {/* <th>Completed States</th> */}
