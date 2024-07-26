@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Table from "react-bootstrap/Table";
@@ -7,8 +5,8 @@ import { deleteData, getData, editData } from "./data";
 import { MdEdit, MdDeleteForever, MdVerified } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import { IoSearchOutline } from "react-icons/io5";
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
 const User = () => {
   const [allGetData, setAllGetData] = useState([]);
@@ -35,12 +33,15 @@ const User = () => {
     fetchData();
   }, []);
 
+  // filter and search functionlity
   useEffect(() => {
     const searchResult = allGetData.filter((user) =>
-      user.title.toLowerCase().includes(query.toLowerCase())
+      user.title.toLowerCase().includes(query.toLowerCase()) || // Check the title
+      user.id.toString().includes(query) // Check the ID, converting it to string
     );
     setFilteredData(searchResult);
   }, [query, allGetData]);
+  
 
   const handleDelete = async (id) => {
     try {
@@ -49,7 +50,9 @@ const User = () => {
 
       if (response.success) {
         setAllGetData((prevData) => prevData.filter((user) => user.id !== id));
-        setFilteredData((prevData) => prevData.filter((user) => user.id !== id));
+        setFilteredData((prevData) =>
+          prevData.filter((user) => user.id !== id)
+        );
       } else {
         console.error(response.message);
       }
@@ -68,7 +71,7 @@ const User = () => {
     const { name, value, type, checked } = event.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -81,10 +84,14 @@ const User = () => {
 
       if (response.success) {
         setAllGetData((prevData) =>
-          prevData.map((item) => (item.id === updatedUser.id ? response.data : item))
+          prevData.map((item) =>
+            item.id === updatedUser.id ? response.data : item
+          )
         );
         setFilteredData((prevData) =>
-          prevData.map((item) => (item.id === updatedUser.id ? response.data : item))
+          prevData.map((item) =>
+            item.id === updatedUser.id ? response.data : item
+          )
         );
         setShowModal(false); // Hide the modal
         setEditingUser(null);
@@ -154,7 +161,7 @@ const User = () => {
           </form>
         </Modal.Body>
       </Modal>
-<div className="py-4"></div>
+      <div className="py-4"></div>
       <div className="h-[78vh] border border-black rounded-lg overflow-scroll">
         <Table striped bordered hover>
           <thead>
@@ -169,7 +176,7 @@ const User = () => {
           <tbody>
             {filteredData.map((user, index) => (
               <tr key={user.id}>
-                <td>{index + 1}</td>
+                <td>{user.id}</td>
                 <td>{user.userId}</td>
                 <td>{user.title}</td>
                 {/* <td>
@@ -181,17 +188,25 @@ const User = () => {
                 </td> */}
                 <td>
                   <div className="flex gap-2">
-                    <Button variant="outline-primary" onClick={() => handleEdit(user)}>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => handleEdit(user)}
+                    >
                       <MdEdit size={23} />
                     </Button>
-                    <Button variant="outline-danger" onClick={() => handleDelete(user.id)}>
+                    <Button
+                      variant="outline-danger"
+                      onClick={() => handleDelete(user.id)}
+                    >
                       <MdDeleteForever size={23} />
                     </Button>
-                    <span>{user.completed ? (
-                    <MdVerified color="green" size={23} />
-                  ) : (
-                    <RxCross2 color="red" size={23} />
-                  )}</span>
+                    <span>
+                      {user.completed ? (
+                        <MdVerified color="green" size={23} />
+                      ) : (
+                        <RxCross2 color="red" size={23} />
+                      )}
+                    </span>
                   </div>
                 </td>
               </tr>
